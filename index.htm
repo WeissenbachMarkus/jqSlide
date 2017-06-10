@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bildgalerie</title>
+
+        <link rel="stylesheet" href="css/mikesTheme.min.css" />
+        <link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+        <link rel="stylesheet" href="css/mikesCustom.css" />        
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+    </head>
+
+    <body >
+        <div data-role="page" id="p1">
+            <div data-role="header">
+                <h4 align="center">Bildgalerie</h4>
+            </div><!-- Ende header -->
+            <div data-role="content">
+                <p align="center"><img align="middle" id="bild" src="images/fuerte/2.jpg" height="480"></p>
+
+                <div align="center" id="f1" class="ui-grid-b">
+                    <!--form name="form1" method="post" action=""-->
+
+
+                    <div class="ui-block-a">
+                        <label for="album"></label>
+                        <select name="album" id="album">
+                            <option value="Dummyeintrag" selected="selected">Dummyeintrag 1</option>
+                            <option value="Dummyeintrag 2">Dummyeintrag 2</option>
+                            <option value="Dummyeintrag 3">Dummyeintrag 3</option>
+                        </select>
+                    </div>
+
+                    <div class="ui-block-b">
+                        <label for="zeit">Dauer in Sekunden</label>
+                        <input type="range" name="zeit" id="zeit" min="1" max="10" value="3">
+                    </div>
+
+                    <div class="ui-block-c">
+
+
+                        <button type="button" name="button" id="button" value="Start Slideshow">Start Slideshow</button>
+                    </div>
+
+
+
+
+                </div>
+                <div id="ton" class="ui-grid-a">
+                    <audio controls="controls">
+                        <!--        <source src="fx/Irland.ogg" type="audio/ogg" />
+                        -->         <source src="fx/Irland.mp3" type="audio/mpeg" />
+
+                        Sorry - Ihr Browser hat keine Unterstützung für dieses Audio-Format.
+                    </audio>
+                </div>
+            </div><!-- Ende content -->
+            <div data-role="footer">
+                <h4>Copyright Max Mustermann</h4>
+            </div><!-- Ende Ende Footer #p1 -->
+        </div><!-- Ende page 1 -->
+
+        <script language="javascript" type="text/javascript">
+
+
+            var pictures = [];
+            var count = 0;
+            var started = false;
+
+            window.onload = function ()
+            {
+
+                //TODO: Befülle Dropdown mit Alben
+                $.ajax({url: 'http://localhost/JS_jQuery_Slideshow_Angabe/php/galleryservice.php?all=1', success: function (result) {
+
+                        var albumNames = [];
+                        $.each(result, function (key, value) {
+                            albumNames.push(key.substr(key.indexOf('\\') + 1));
+                        });
+
+                        var $options = $('#album option');
+
+                        if ($options.length < albumNames.length)
+                        {
+                            var diff = albumNames.length - $options.length;
+
+                            for (var i = 0; i < diff; i++) {
+                                $('<option>').appendTo('#album');
+                            }
+                        }
+
+                        for (var i = 0; i < $options.length; i++)
+                        {
+                            console.log(albumNames[i]);
+                            $($options[i]).val(albumNames[i]);
+                            $($options[i]).text(albumNames[i]);
+
+                        }
+
+                        $options[0].selected = true;
+
+                    }
+                });
+
+                //TODO: Reagiere auf Buttonklick
+                $('#button').click(function ()
+                {
+                    toggle();
+                });
+            };
+
+
+            function toggle()
+            {
+                //TODO: Schalte Slideshow an oder aus
+                if (!started)
+                {
+                    started = true;
+                    $('#button').text('Stop Slideshow');
+                    start();
+                } else
+                {
+                    started = false;
+                    $('#button').text('Start Slideshow');
+                }
+
+
+            }
+
+            function start()
+            {
+
+
+                //TODO: Initialisiere die Slideshow:
+                //Hole Bildurls, abhängig vom gewählten Album
+
+
+                $.ajax({url: 'http://localhost/JS_jQuery_Slideshow_Angabe/php/galleryservice.php?album=' + $('#album').val(), success: function (result) {
+                        pictures = result;
+                        console.log(pictures);
+                        init(count);
+                    }
+                });
+
+
+
+            }
+
+            function init(count)
+            {
+
+                if (started)
+                {
+
+                    if (count == pictures.length)
+                        count = 0;
+
+                    //TODO:  Bildübergangseffekt
+                    $('#bild').prop('src', pictures[count++].substr(3));
+
+                    //TODO: Sekunden vom Range auslesen
+                    var sekunden = $('#zeit').val();
+
+                    //Rufe Methode rekursiv nach x Sekunden auf
+
+                    setTimeout(function () {
+                        init(count)
+                    }, sekunden * 1000);
+                }
+            }
+
+
+        </script>
+
+    </body>
+</html>
