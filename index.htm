@@ -82,7 +82,9 @@
                         });
 
                         var $options = $('#album option');
-
+                        
+                        
+//wenn alben hinzufgefügt werden sollen
                         if ($options.length < albumNames.length)
                         {
                             var diff = albumNames.length - $options.length;
@@ -97,8 +99,10 @@
                             console.log(albumNames[i]);
                             $($options[i]).val(albumNames[i]);
                             $($options[i]).text(albumNames[i]);
-
                         }
+
+console.log($('#album').prop('selectedIndex',0));
+console.log($('#album').val());
 
                         $options[0].selected = true;
 
@@ -133,10 +137,8 @@
             function start()
             {
 
-
                 //TODO: Initialisiere die Slideshow:
                 //Hole Bildurls, abhängig vom gewählten Album
-
 
                 $.ajax({url: 'http://localhost/JS_jQuery_Slideshow_Angabe/php/galleryservice.php?album=' + $('#album').val(), success: function (result) {
                         pictures = result;
@@ -144,8 +146,6 @@
                         init(count);
                     }
                 });
-
-
 
             }
 
@@ -159,8 +159,15 @@
                         count = 0;
 
                     //TODO:  Bildübergangseffekt
-                    $('#bild').prop('src', pictures[count++].substr(3));
-
+                    $('#bild').animate({
+                        width:'0px'
+                    },1000);
+                    
+                     setTimeout( function(){ $('#bild').prop('src', pictures[count++].substr(3));}, 1000);
+                                               
+ $('#bild').animate({
+                        width:'640px'
+                    },1000);
                     //TODO: Sekunden vom Range auslesen
                     var sekunden = $('#zeit').val();
 
@@ -169,6 +176,7 @@
                     setTimeout(function () {
                         init(count)
                     }, sekunden * 1000);
+                    
                 }
             }
 
